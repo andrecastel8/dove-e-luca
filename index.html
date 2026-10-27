@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dov'è Luca?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pagina:#BFDCE0;
+  --cornice:#0F1C33;
+  --notte:#13233F;
+  --notte-2:#1E355E;
+  --testo:#F2F4F8;
+  --testo-2:#A9B4C8;
+  --cc-bg:#000000;
+  --cc:#FFE14D;
+  --miami:#FF5EA8;
+  --roma:#E0A526;
+  --cervo:#2EC4D6;
+  --ufficio:#C9C3B6;
+  --ok:#3DDC84;
+  --ok-testo:#062B14;
+  --ko:#FF5A4E;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --pagina:#0B2A31; --cornice:#050D1A; color-scheme:dark; }
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  background:var(--pagina);
+  display:flex;justify-content:center;align-items:center;
+  font-family:'Bricolage Grotesque',system-ui,sans-serif;
+  color:var(--testo);
+  -webkit-tap-highlight-color:transparent;
+}
+.phone{
+  width:100%;max-width:420px;height:100dvh;max-height:880px;
+  background:var(--notte);
+  display:flex;flex-direction:column;position:relative;overflow:hidden;
+  transition:box-shadow .25s;
+}
+@media (min-width:500px){
+  .phone{height:calc(100dvh - 48px);border-radius:40px;box-shadow:0 0 0 12px var(--cornice)}
+  .phone.flash-ok{box-shadow:inset 0 0 0 5px var(--ok),0 0 0 12px var(--cornice)}
+  .phone.flash-ko{box-shadow:inset 0 0 0 5px var(--ko),0 0 0 12px var(--cornice)}
+  .phone.flash-gold{box-shadow:inset 0 0 0 5px var(--cc),0 0 0 12px var(--cornice)}
+}
+@media (max-width:499px){
+  .phone.flash-ok{box-shadow:inset 0 0 0 5px var(--ok)}
+  .phone.flash-ko{box-shadow:inset 0 0 0 5px var(--ko)}
+  .phone.flash-gold{box-shadow:inset 0 0 0 5px var(--cc)}
+}
+[hidden]{display:none !important}
+button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--cc);outline-offset:2px}
+
+/* Barra di stato */
+.status{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 6px;font-size:15px;color:var(--testo-2);min-height:52px}
+.status .score{color:var(--testo);font-weight:800;font-size:18px;font-variant-numeric:tabular-nums}
+.status .mult{color:var(--cc);font-weight:800;margin-left:6px}
+.status .lvl{margin-left:10px;font-size:14px}
+.cap.lost{color:#7A6A1F}
+.status .right{display:flex;align-items:center;gap:14px;margin-left:auto}
+.mute{background:none;border:0;color:var(--testo-2);font-size:18px;padding:4px}
+.battery{display:flex;align-items:center;gap:2px}
+.battery .body{display:flex;gap:3px;padding:3px;border:2px solid var(--testo-2);border-radius:5px}
+.battery .cell{width:9px;height:12px;border-radius:2px;background:transparent}
+.battery .cell.on{background:var(--ok)}
+.battery.low .cell.on{background:var(--ko)}
+.battery .tip{width:3px;height:8px;background:var(--testo-2);border-radius:0 2px 2px 0}
+
+/* Comuni */
+.screen{flex:1;display:flex;flex-direction:column;min-height:0}
+.avatar{width:112px;height:112px;border-radius:50%;position:relative;margin:0 auto;flex:none}
+.avatar svg{width:100%;height:100%;display:block;border-radius:50%}
+.avatar.ringing::before,.avatar.ringing::after{
+  content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--testo-2);
+  animation:pulse 1.2s ease-out infinite;pointer-events:none;
+}
+.avatar.ringing::after{animation-delay:.6s}
+@keyframes pulse{from{transform:scale(1);opacity:.8}to{transform:scale(1.6);opacity:0}}
+@media (prefers-reduced-motion:reduce){.avatar.ringing::before,.avatar.ringing::after{animation:none;opacity:.5}}
+.call{
+  width:100%;padding:18px;border:0;border-radius:999px;background:var(--ok);color:var(--ok-testo);
+  font-weight:800;font-size:20px;
+}
+.call:active{transform:scale(.98)}
+.ghost{
+  width:100%;padding:15px;margin-top:10px;border:2px solid var(--notte-2);border-radius:999px;
+  background:transparent;color:var(--testo);font-weight:800;font-size:17px;
+}
+.ghost:active{transform:scale(.98)}
+
+/* Menu */
+#menu{padding:20px 28px 30px;justify-content:center;text-align:center}
+#menu h1{font-size:48px;line-height:1;letter-spacing:-.025em;font-weight:800;margin:22px 0 14px}
+#menu p{font-family:'Atkinson Hyperlegible',sans-serif;font-size:17px;line-height:1.5;color:var(--testo-2);margin:0 auto 10px;max-width:32ch}
+#menu .rules{font-size:15px}
+.name{
+  display:block;width:100%;margin:20px 0 6px;padding:15px 18px;border-radius:14px;
+  border:2px solid var(--notte-2);background:var(--notte-2);color:var(--testo);
+  font:500 18px 'Bricolage Grotesque',sans-serif;text-align:center;
+}
+.name::placeholder{color:var(--testo-2)}
+.name.need{border-color:var(--cc)}
+.nameMsg{font-size:14px;color:var(--cc);min-height:1.4em;margin:0 0 8px}
+.record{font-size:15px;color:var(--testo-2);margin-top:12px;min-height:1.2em}
+.hint{font-size:13px;color:var(--testo-2);margin-top:6px}
+
+/* Partita */
+.caller{text-align:center;padding:10px 20px 0}
+.caller .who{font-size:30px;font-weight:800;letter-spacing:-.02em;margin:12px 0 2px}
+.caller .state{color:var(--testo-2);font-variant-numeric:tabular-nums;font-size:16px;min-height:1.3em}
+.stage{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10px 22px;min-height:180px}
+.boss{font-size:19px;line-height:1.35;margin:0 0 14px;min-height:1.4em;color:var(--testo)}
+.captions{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.cap{
+  background:var(--cc-bg);color:var(--cc);
+  font:700 19px/1.35 'Atkinson Hyperlegible',sans-serif;
+  padding:7px 11px;border-radius:3px;max-width:100%;
+}
+.result .big{font-size:38px;font-weight:800;letter-spacing:-.02em;line-height:1.05;margin:0}
+.result .sub{font-family:'Atkinson Hyperlegible',sans-serif;font-size:19px;margin:8px 0 0;color:var(--testo)}
+.result .pts{font-size:17px;margin:10px 0 0;color:var(--cc);font-weight:800}
+.timer{height:6px;background:var(--notte-2);margin:0 22px;border-radius:3px;overflow:hidden}
+.timer .fill{height:100%;background:var(--testo);transform-origin:left center}
+.timer.hurry .fill{background:var(--ko)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 16px 22px}
+.dest{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:20px 14px;border:0;border-left:7px solid var(--c);border-radius:14px;
+  background:var(--notte-2);color:var(--testo);font-weight:800;font-size:19px;text-align:left;
+  transition:transform .08s,background .15s;
+}
+.dest .k{font-weight:500;font-size:13px;color:var(--testo-2)}
+.dest:active:not(:disabled){transform:scale(.97)}
+.dest:disabled{opacity:.45;cursor:default}
+.dest.giusto{background:var(--c);color:var(--notte);opacity:1}
+.dest.giusto .k{color:var(--notte)}
+.dest.sbagliato{outline:3px solid var(--ko);outline-offset:-3px;opacity:1}
+
+/* Fine partita */
+#over{padding:24px 28px 30px;justify-content:center}
+#over h2{font-size:44px;line-height:1;letter-spacing:-.025em;margin:0 0 10px}
+#over .lead{font-family:'Atkinson Hyperlegible',sans-serif;font-size:18px;color:var(--testo-2);margin:0 0 24px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:18px 12px;margin:0 0 18px}
+.stats dt{font-size:14px;color:var(--testo-2)}
+.stats dd{margin:2px 0 0;font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
+.stats .new{color:var(--cc)}
+.rank{font-size:18px;font-weight:800;color:var(--cc);margin:0 0 22px;min-height:1.4em}
+
+/* Classifica */
+#board{padding:8px 22px 26px}
+#board h2{font-size:40px;line-height:1;letter-spacing:-.025em;margin:6px 0 6px}
+.boardNote{font-family:'Atkinson Hyperlegible',sans-serif;font-size:14px;color:var(--testo-2);margin:0 0 14px;min-height:1.3em}
+.list{list-style:none;margin:0 0 14px;padding:0;flex:1;overflow-y:auto;min-height:0}
+.list li{
+  display:grid;grid-template-columns:2.4em 1fr auto;align-items:baseline;gap:8px;
+  padding:12px 4px;border-bottom:1px solid var(--notte-2);font-size:18px;
+}
+.list .pos{color:var(--testo-2);font-variant-numeric:tabular-nums;font-size:15px}
+.list .nm{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.list .pt{font-weight:800;font-variant-numeric:tabular-nums}
+.list li.first .nm,.list li.first .pt{font-size:22px}
+.list li.me .nm,.list li.me .pt{color:var(--cc)}
+.list .empty{display:block;border:0;color:var(--testo-2);font-family:'Atkinson Hyperlegible',sans-serif;font-size:16px;padding:18px 0}
+</style>
+</head>
+<body>
+<main class="phone" id="phone">
+
+  <div class="status">
+    <div id="hud"><span class="score" id="score">0</span><span class="mult" id="mult"></span><span class="lvl" id="lvl"></span></div>
+    <div class="right">
+      <button class="mute" id="mute" aria-pressed="false" aria-label="Disattiva audio">🔊</button>
+      <div class="battery" id="battery" aria-label="Batteria: 3 su 3">
+        <div class="body"><span class="cell on"></span><span class="cell on"></span><span class="cell on"></span></div>
+        <div class="tip"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MENU -->
+  <section class="screen" id="menu">
+    <div class="avatar" aria-hidden="true"></div>
+    <h1>Dov'è Luca?</h1>
+    <p>Chiama Luca! Sarai così fortunato da trovarlo in ufficio?</p>
+    <input class="name" id="name" maxlength="16" placeholder="Il tuo nome" autocomplete="nickname" aria-label="Il tuo nome" aria-describedby="nameMsg">
+    <div class="nameMsg" id="nameMsg" aria-live="polite"></div>
+    <button class="call" id="start">Chiama Luca</button>
+    <button class="ghost" id="menuBoard">Classifica</button>
+    <div class="record" id="menuRecord"></div>
+    <div class="hint">Da tastiera: tasti 1, 2, 3, 4</div>
+  </section>
+
+  <!-- PARTITA -->
+  <section class="screen" id="game" hidden>
+    <div class="caller">
+      <div class="avatar" id="avatar" aria-hidden="true"></div>
+      <div class="who">Luca</div>
+      <div class="state" id="state">Squilla…</div>
+    </div>
+    <div class="stage" aria-live="polite">
+      <div id="callView">
+        <p class="boss" id="boss"></p>
+        <div class="captions" id="captions"></div>
+      </div>
+      <div class="result" id="result" hidden>
+        <p class="big" id="rBig"></p>
+        <p class="sub" id="rSub"></p>
+        <p class="pts" id="rPts"></p>
+      </div>
+    </div>
+    <div class="timer" id="timer"><div class="fill" id="fill"></div></div>
+    <div class="grid">
+      <button class="dest" data-loc="miami" style="--c:var(--miami)" disabled>Miami <span class="k">1</span></button>
+      <button class="dest" data-loc="roma" style="--c:var(--roma)" disabled>Roma <span class="k">2</span></button>
+      <button class="dest" data-loc="cervo" style="--c:var(--cervo)" disabled>Porto Cervo <span class="k">3</span></button>
+      <button class="dest" data-loc="ufficio" style="--c:var(--ufficio)" disabled>Ufficio <span class="k">4</span></button>
+    </div>
+  </section>
+
+  <!-- FINE -->
+  <section class="screen" id="over" hidden>
+    <h2>Batteria scarica.</h2>
+    <p class="lead">Luca resta irreperibile.</p>
+    <dl class="stats">
+      <div><dt>Punti</dt><dd id="oScore">0</dd></div>
+      <div><dt>Livello</dt><dd id="oFound">0</dd></div>
+      <div><dt>Serie migliore</dt><dd id="oStreak">0</dd></div>
+      <div><dt>Record personale</dt><dd id="oBest">0</dd></div>
+    </dl>
+    <p class="rank" id="oRank" aria-live="polite"></p>
+    <button class="call" id="again">Richiama</button>
+    <button class="ghost" id="overBoard">Classifica</button>
+  </section>
+
+  <!-- CLASSIFICA -->
+  <section class="screen" id="board" hidden>
+    <h2>Classifica</h2>
+    <p class="boardNote" id="boardNote"></p>
+    <ol class="list" id="list"></ol>
+    <button class="call" id="boardPlay">Chiama Luca</button>
+    <button class="ghost" id="boardBack">Torna alla home</button>
+  </section>
+
+</main>
+
+<script>
+/* =========================================================
+   CLASSIFICA CONDIVISA — incolla qui i dati del progetto Supabase
+   (Project Settings → API). Se restano vuoti, la classifica
+   funziona solo in locale su questo dispositivo.
+   ========================================================= */
+const SUPABASE_URL = '';   // es. 'https://abcdefgh.supabase.co'
+const SUPABASE_KEY = '';   // chiave "publishable" o "anon public"
+
+/* =========================================================
+   CONTENUTI — modificabili liberamente
+   easy = indizi riconoscibili, hard = indizi sottili
+   Regola: mai nominare il luogo o un suo simbolo ovvio.
+   ========================================================= */
+const CLUES = {
+  miami: {
+    easy: [
+      'qualcuno ordina un cortadito al bancone',
+      '«Qui il ghiaccio lo mettono anche nell\'acqua»',
+      '«Ho chiesto un caffè e mi è arrivato un secchio»',
+      '«La mancia minima è il venti per cento»',
+      '«Ho lasciato la macchina al valet»',
+      'un DJ set in piscina alle undici di mattina',
+      '«Il prezzo sul cartellino non include le tasse»',
+      '«Al supermercato ci sono trenta tipi di burro di arachidi»',
+      '«Il pranzo qui si chiama brunch e dura tre ore»',
+      '«In spiaggia ci sono torrette dei bagnini colorate»'
+    ],
+    hard: [
+      'sbadiglio: «Ma da voi che ore sono?»',
+      '«Il volo di ritorno parte stasera, arrivo domattina»',
+      'pellicani che si contendono un pesce sulla banchina',
+      'radio: allerta uragano per il weekend',
+      '«Piove tutti i pomeriggi alle quattro, poi niente»',
+      '«Devo ricordarmi di dichiarare tutto alla dogana»',
+      '«Il pick-up a noleggio non entra nel parcheggio»',
+      'cartello: vietato dare da mangiare agli alligatori',
+      '«Colazione? Pancake alle undici»',
+      '«Qui un caffè costa sei, ma non euro»'
+    ],
+    expert: [
+      '«Qui il sole sorge quando da voi è ora di pranzo»',
+      '«Ho comprato il latte a galloni»',
+      '«Fuori ci sono novanta gradi»',
+      '«La spina del caricatore non entra nella presa»',
+      '«Andavo a sessantacinque miglia all\'ora»',
+      '«Il weekend lungo qui cade a fine maggio»',
+      '«Quando fa freddo le iguane cadono dagli alberi»',
+      '«Il cameriere mi riempie l\'acqua senza chiedere»',
+      '«Al bar mi hanno chiesto il documento per una birra»',
+      '«Qui gli avocado sono grandi come meloni»',
+      '«Per dolce una key lime pie»',
+      '«La sveglia segna le sette AM»',
+      '«Il tassista ha girato a destra col rosso»',
+      '«C\'è un lamantino vicino al pontile»'
+    ]
+  },
+  roma: {
+    easy: [
+      'un vigile fischia a un incrocio impazzito',
+      'motorini che sgasano su un selciato irregolare',
+      '«Una carbonara, ma senza panna eh»',
+      'un ambulante: «Ombrello? Selfie stick?»',
+      'due tifosi litigano sul derby',
+      '«Prendo una cacio e pepe e scappo»',
+      '«Il cameriere continua a chiamarmi dottore»',
+      '«Ho fatto tre chilometri in un\'ora»',
+      '«Ho preso un maritozzo con la panna»',
+      '«Qui ogni cento metri c\'è una chiesa»'
+    ],
+    hard: [
+      'gabbiani enormi che svuotano un cassonetto',
+      '«C\'è sciopero dei mezzi, arrivo tardi»',
+      '«Ho parcheggiato in terza fila, faccio presto»',
+      '«Finalmente s\'è alzato il ponentino»',
+      'una fontanella che butta acqua senza fermarsi mai',
+      '«Ho preso un supplì al volo»',
+      '«Sotto il ministero c\'è una manifestazione»',
+      '«Stasera cena fuori porta, ai Castelli»',
+      'un monsignore saluta qualcuno al tavolo accanto',
+      '«Il traffico sull\'anello è completamente fermo»'
+    ],
+    expert: [
+      '«Hanno appena sparato il cannone, è mezzogiorno»',
+      '«Dal buco di una serratura si vede una cupola»',
+      '«Prendo una grattachecca e torno»',
+      '«Aspetto il 64, ma passa sempre pieno»',
+      '«Cena da quinto quarto, stasera»',
+      '«Domenica c\'è l\'Angelus, la piazza sarà piena»',
+      '«Su ogni tombino ci sono quattro lettere»',
+      '«Ho bevuto dal nasone»',
+      '«Sto passando su un ponte pieno di angeli»',
+      '«Un gatto dorme su un rudere di duemila anni»',
+      '«Stasera fuochi per Pietro e Paolo»',
+      '«Davanti a me c\'è un obelisco sopra un elefante»',
+      '«Passa il tram 8, sferragliando»',
+      '«Panino con la porchetta di Ariccia»'
+    ]
+  },
+  cervo: {
+    easy: [
+      'drizze che tintinnano sugli alberi delle barche',
+      '«Il tender ci passa a prendere alle otto»',
+      'un motoscafo che rallenta e qualcuno lancia una cima',
+      '«Andiamo col gommone a fare il bagno in una caletta»',
+      '«Metti la crema, in barca il sole picchia»',
+      'un marinaio: «Ormeggiamo di poppa»',
+      '«Aperitivo in banchina alle sette»',
+      'in spiaggia un venditore urla «Cocco bello!»',
+      '«Ho preso ombrellone e due lettini in prima fila»',
+      '«Il campo boe è pieno»'
+    ],
+    hard: [
+      '«C\'è un maestrale assurdo, ti sento male»',
+      '«Il mirto lo offre la casa»',
+      '«Stasera porceddu»',
+      '«La Piazzetta è piena di gente»',
+      '«Il traghetto da Livorno era pieno»',
+      '«Domani giro dell\'arcipelago in gommone»',
+      '«Per dolce le seadas col miele»',
+      '«Il cannonau va benissimo con questo pecorino»',
+      '«Spezza il carasau, che fa le briciole»',
+      'profumo di macchia mediterranea e granito caldo'
+    ],
+    expert: [
+      '«Qui le rocce hanno la forma di animali»',
+      '«Qui le case non hanno spigoli, sembrano scolpite»',
+      '«La chiesa qui è bianca e tutta curve»',
+      '«Un vermentino di Gallura, grazie»',
+      '«Domani regatano i maxi, il porto è pieno»',
+      '«Mi offrono il casu marzu, passo»',
+      '«Stasera concerto di launeddas»',
+      '«Il vento oggi entra dalle Bocche»',
+      '«Domani vediamo la spiaggia rosa, ma solo dalla barca»',
+      '«A pranzo culurgiones»',
+      '«Qui il granito è rosa»',
+      '«Qui per dire sì dicono "eja"»',
+      '«Domani gita a Caprera, alla casa di Garibaldi»',
+      '«Bottarga di muggine sulla pasta, stasera»'
+    ]
+  },
+  ufficio: [
+    'la stampante si inceppa',
+    'qualcuno: «Chi ha preso la mia tazza?»',
+    'un badge bippa al tornello',
+    '«La sala riunioni è prenotata fino alle tre»',
+    'la macchinetta del caffè del piano',
+    'un collega: «Luca? Sei proprio tu?»',
+    'tastiere che ticchettano, neon che ronzano',
+    '«In cucina c\'è la torta per un compleanno»',
+    'il condizionatore dell\'open space a diciotto gradi',
+    '«Chi ha lasciato i fogli sulla fotocopiatrice?»'
+  ]
+};
+const BOSS_LINES = [
+  'Pronto? Ti sento a tratti.',
+  'Dimmi veloce, sono in call.',
+  'Ti richiamo tra cinque minuti.',
+  'Mandami tutto per mail.',
+  'Sto entrando in una galleria…',
+  'Sì sì, ci sono. Dimmi.',
+  'Ho dieci minuti tra una cosa e l\'altra.',
+  'Ti metto in vivavoce, ok?'
+];
+const LIAR_LINE = 'Sono in ufficio, giuro.';                    // bugia nei turni normali
+const OFFICE_LIES = ['Sono in aeroporto, ti sento male.', 'Sono fuori, si sente il vento.']; // bugia nei turni ufficio
+const LEVEL_MSG = ['', '',
+  'Più veloce.',
+  'La linea è disturbata.',
+  'Un indizio solo.',
+  'Indizi da esperti. E spariscono.',
+  'Solo esperti.',
+  'La linea peggiora.'
+];
+const WHERE = { miami:'a Miami', roma:'a Roma', cervo:'a Porto Cervo', ufficio:'in ufficio' };
+
+/* =========================================================
+   BILANCIAMENTO
+   ========================================================= */
+const T = {
+  lives: 3,
+  ringMin: 500, ringMax: 1200,                 // ms di squillo
+  callsPerLevel: 5,
+  /* Livelli. time = secondi per rispondere, gap = ms tra indizi,
+     noise = quota di lettere disturbate, vanish = ms prima che l'indizio
+     sparisca (0 = resta), liar = probabilità che Luca menta */
+  levels: [
+    { time: 5.0, gap: 650, noise: 0,   vanish: 0,    liar: 0   }, // 1: due indizi facili
+    { time: 4.2, gap: 600, noise: 0,   vanish: 0,    liar: .15 }, // 2: facile + difficile
+    { time: 3.5, gap: 550, noise: .12, vanish: 0,    liar: .25 }, // 3: difficile, linea disturbata
+    { time: 3.0, gap: 500, noise: .2,  vanish: 0,    liar: .3  }, // 4: un indizio difficile
+    { time: 2.6, gap: 450, noise: .28, vanish: 1600, liar: .35 }, // 5: indizi da esperti, spariscono
+    { time: 2.2, gap: 400, noise: .35, vanish: 1200, liar: .4  }  // 6: solo esperti
+  ],
+  /* dal livello 7 in poi ogni livello peggiora ancora fino ai limiti */
+  beyond: { timeStep: .2, timeMin: 1.1, noiseStep: .06, noiseMax: .6, vanishStep: 100, vanishMin: 700 },
+  levelBonus: .25,                              // +25% punti per ogni livello
+  officeFirst: [4, 6],                          // primo turno ufficio tra il 4° e il 6°
+  officeEvery: [5, 8],                          // poi uno ogni 5–8 chiamate
+  officeBase: 1000, officeSpeed: 1000,          // bonus ufficio (× moltiplicatore)
+  feedbackMs: 1150,
+  boardSize: 50
+};
+
+/* =========================================================
+   UTILITÀ
+   ========================================================= */
+const $ = s => document.querySelector(s);
+const rand = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const fmt = n => Number(n).toLocaleString('it-IT');
+const norm = s => String(s || '').trim().toLowerCase();
+const store = {
+  get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
+  set(k,v){ try { localStorage.setItem(k, v); } catch(e){} }
+};
+
+/* Avatar stilizzato */
+const AVATAR = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"> <defs><clipPath id="avc"><circle cx="60" cy="60" r="60"/></clipPath></defs> <g clip-path="url(#avc)"> <rect width="120" height="120" fill="#1E355E"/> <path d="M6 120 C10 97 32 88 60 87 C88 88 110 97 114 120 Z" fill="#1F2438"/> <path d="M45 86 L60 110 L75 86 L69 82 L60 90 L51 82 Z" fill="#F4F4F2"/> <path d="M45 86 L58 116 L44 120 L32 96 Z M75 86 L62 116 L76 120 L88 96 Z" fill="#161B2D"/> <path d="M55.5 89 H64.5 L62.8 96 H57.2 Z" fill="#2F9E5B"/> <path d="M57.2 96 H62.8 L65.5 120 H54.5 Z" fill="#2F9E5B"/> <g fill="#E8F5EC"><circle cx="58.5" cy="92" r=".8"/><circle cx="61.5" cy="93.5" r=".8"/><circle cx="58" cy="100" r=".8"/><circle cx="61.8" cy="103" r=".8"/><circle cx="58.6" cy="107" r=".8"/><circle cx="62" cy="111" r=".8"/><circle cx="58.4" cy="115" r=".8"/></g> <path d="M51 70 H69 V88 C64 91 56 91 51 88 Z" fill="#C98F6C"/> <ellipse cx="38.5" cy="54" rx="4.2" ry="7" fill="#E2AC86"/> <ellipse cx="81.5" cy="54" rx="4.2" ry="7" fill="#E2AC86"/> <ellipse cx="60" cy="52" rx="22" ry="27" fill="#E9B892"/> <path d="M38.5 47 C36 26 48 17 61 17 C74 17 85 26 81.5 47 C80 38 76 32 70 30.5 C62 29 54 29.5 48 31.5 C43 33.5 40.5 39 38.5 47 Z" fill="#2A211C"/> <path d="M38.6 50 C38.6 71 49 80.5 60 80.5 C71 80.5 81.4 71 81.4 50 C80 58 77.5 64 72 66 C68 72 52 72 48 66 C42.5 64 40 58 38.6 50 Z" fill="#7A685C" opacity=".78"/> <path d="M49 64.5 C53 74.5 67 74.5 71 64.5 C64 66.5 56 66.5 49 64.5 Z" fill="#9A3640"/> <path d="M51 65.2 C56 66.8 64 66.8 69 65.2 L67.6 68 C63 69.4 57 69.4 52.4 68 Z" fill="#FFFFFF"/> <path d="M49.5 62.8 C54 59.6 66 59.6 70.5 62.8 C66 61.6 54 61.6 49.5 62.8 Z" fill="#5A473B"/> <path d="M60 47 C59.2 53 57.2 56.4 58.2 58.6 C59.4 59.8 62 59.8 63.2 58.8" fill="none" stroke="#C48663" stroke-width="1.6" stroke-linecap="round"/> <ellipse cx="51" cy="48.5" rx="2.6" ry="2.1" fill="#2B1F1A"/> <ellipse cx="69" cy="48.5" rx="2.6" ry="2.1" fill="#2B1F1A"/> <path d="M45.5 43.5 Q51 40.5 56 42.6 M64 42.6 Q69 40.5 74.5 43.5" fill="none" stroke="#2A211C" stroke-width="2.3" stroke-linecap="round"/> </g></svg>`;
+document.querySelectorAll('.avatar').forEach((el, i) => {
+  el.innerHTML = AVATAR.replaceAll('avc', 'avc' + i);
+});
+
+/* =========================================================
+   CLASSIFICA
+   ========================================================= */
+const online = () => Boolean(SUPABASE_URL && SUPABASE_KEY);
+function apiHeaders(){
+  const h = { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' };
+  if (SUPABASE_KEY.startsWith('eyJ')) h.Authorization = 'Bearer ' + SUPABASE_KEY; // chiavi anon "legacy"
+  return h;
+}
+function localScores(){ try { return JSON.parse(store.get('luca:scores') || '[]'); } catch(e){ return []; } }
+function localBoard(){
+  const by = {};
+  localScores().forEach(({ name, score }) => {
+    const k = norm(name);
+    if (!by[k]) by[k] = { name, best: 0, games: 0 };
+    by[k].best = Math.max(by[k].best, score);
+    by[k].games++;
+  });
+  return Object.values(by).sort((a, b) => b.best - a.best).slice(0, T.boardSize);
+}
+async function submitScore(name, score){
+  if (!name || score <= 0) return;
+  const all = localScores(); all.push({ name, score }); store.set('luca:scores', JSON.stringify(all.slice(-200)));
+  if (!online()) return;
+  try {
+    await fetch(SUPABASE_URL + '/rest/v1/scores', {
+      method: 'POST',
+      headers: { ...apiHeaders(), Prefer: 'return=minimal' },
+      body: JSON.stringify({ name, score })
+    });
+  } catch(e){}
+}
+async function fetchBoard(){
+  if (!online()) return { rows: localBoard(), mode: 'local' };
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard?select=name,best,games&order=best.desc&limit=${T.boardSize}`, { headers: apiHeaders() });
+    if (!r.ok) throw new Error(r.status);
+    return { rows: await r.json(), mode: 'online' };
+  } catch(e){
+    return { rows: localBoard(), mode: 'error' };
+  }
+}
+const NOTES = {
+  online: 'Il miglior punteggio di ciascuno, tutto l\'ufficio.',
+  local: 'Classifica salvata solo su questo dispositivo.',
+  error: 'Classifica condivisa non raggiungibile. Mostro i punteggi di questo dispositivo.'
+};
+async function openBoard(){
+  show('board');
+  const list = $('#list');
+  list.innerHTML = '';
+  $('#boardNote').textContent = 'Carico la classifica…';
+  const { rows, mode } = await fetchBoard();
+  $('#boardNote').textContent = NOTES[mode];
+  if (!rows.length) {
+    const li = document.createElement('li');
+    li.className = 'empty';
+    li.textContent = 'Nessun punteggio ancora. Fai la prima chiamata.';
+    list.appendChild(li);
+    return;
+  }
+  const me = norm($('#name').value);
+  rows.forEach((r, i) => {
+    const li = document.createElement('li');
+    if (i === 0) li.classList.add('first');
+    if (me && norm(r.name) === me) li.classList.add('me');
+    const pos = document.createElement('span'); pos.className = 'pos'; pos.textContent = (i + 1) + '.';
+    const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = r.name;
+    const pt = document.createElement('span'); pt.className = 'pt'; pt.textContent = fmt(r.best);
+    li.append(pos, nm, pt);
+    list.appendChild(li);
+  });
+  const mine = list.querySelector('.me');
+  if (mine) mine.scrollIntoView({ block: 'nearest' });
+}
+
+/* =========================================================
+   AUDIO (sintetizzato, nessun file esterno)
+   ========================================================= */
+let actx = null, muted = false;
+function audio(){
+  if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){} }
+  return actx;
+}
+function tone(freq, dur, type = 'sine', vol = .14, when = 0){
+  const a = audio(); if (!a || muted) return;
+  const o = a.createOscillator(), g = a.createGain(), t = a.currentTime + when;
+  o.type = type; o.frequency.value = freq;
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(vol, t + .01);
+  g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  o.connect(g).connect(a.destination);
+  o.start(t); o.stop(t + dur + .05);
+}
+const SFX = {
+  ring(){ tone(425, .3, 'sine', .1); tone(425, .3, 'sine', .1, .4); },
+  ok(){ tone(660, .12, 'triangle', .16); tone(990, .18, 'triangle', .16, .09); },
+  ko(){ tone(150, .32, 'square', .07); },
+  hangup(){ [0, .18, .36].forEach(w => tone(480, .12, 'sine', .1, w)); },
+  jackpot(){ [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, .22, 'triangle', .16, i * .09)); },
+  over(){ [392, 330, 262].forEach((f, i) => tone(f, .35, 'sine', .13, i * .2)); }
+};
+
+/* =========================================================
+   STATO E UI
+   ========================================================= */
+let S = null, timers = [], raf = 0, bags = {};
+function later(fn, ms){ timers.push(setTimeout(fn, ms)); }
+function clearTimers(){ timers.forEach(clearTimeout); timers = []; cancelAnimationFrame(raf); }
+function multiplier(){ return Math.min(4, 1 + Math.floor(S.streak / 3) * 0.5); }
+/* pesca senza ripetizioni finché il mazzo non è finito */
+function draw(key, pool){
+  if (!bags[key] || !bags[key].length) bags[key] = shuffle(pool);
+  return bags[key].pop();
+}
+
+const buttons = [...document.querySelectorAll('.dest')];
+function show(id){
+  ['menu', 'game', 'over', 'board'].forEach(s => $('#' + s).hidden = s !== id);
+  $('#hud').style.visibility = (id === 'game' || id === 'over') ? 'visible' : 'hidden';
+}
+function renderHud(){
+  $('#score').textContent = fmt(S.score);
+  const m = multiplier();
+  $('#mult').textContent = m > 1 ? '×' + m.toLocaleString('it-IT') : '';
+  $('#lvl').textContent = 'Livello ' + levelOf(Math.max(1, S.round));
+  document.querySelectorAll('.battery .cell').forEach((c, i) => c.classList.toggle('on', i < S.lives));
+  $('#battery').classList.toggle('low', S.lives === 1);
+  $('#battery').setAttribute('aria-label', `Batteria: ${S.lives} su ${T.lives}`);
+}
+function setButtons(enabled){
+  buttons.forEach(b => { b.disabled = !enabled; b.classList.remove('giusto', 'sbagliato'); });
+}
+function flash(kind){
+  const p = $('#phone');
+  p.classList.remove('flash-ok', 'flash-ko', 'flash-gold');
+  void p.offsetWidth;
+  p.classList.add('flash-' + kind);
+  later(() => p.classList.remove('flash-' + kind), 400);
+}
+const clock = sec => '00:' + String(Math.floor(sec)).padStart(2, '0');
+
+/* =========================================================
+   LOGICA DI GIOCO
+   ========================================================= */
+function levelOf(r){ return Math.floor((r - 1) / T.callsPerLevel) + 1; }
+function levelCfg(lv){
+  if (lv <= T.levels.length) return T.levels[lv - 1];
+  const last = T.levels[T.levels.length - 1], b = T.beyond, k = lv - T.levels.length;
+  return {
+    time: Math.max(b.timeMin, last.time - b.timeStep * k),
+    gap: last.gap,
+    noise: Math.min(b.noiseMax, last.noise + b.noiseStep * k),
+    vanish: Math.max(b.vanishMin, last.vanish - b.vanishStep * k),
+    liar: last.liar
+  };
+}
+/* disturbo sulla linea: sostituisce lettere a caso */
+function garble(text, p){
+  if (!p) return text;
+  return [...text].map(ch => (ch !== ' ' && Math.random() < p) ? '▒' : ch).join('');
+}
+
+function buildRound(){
+  const r = S.round, lv = levelOf(r), cfg = levelCfg(lv);
+  let loc;
+  if (r === S.nextOffice) {
+    loc = 'ufficio';
+    S.nextOffice = r + rand(...T.officeEvery);
+  } else {
+    let options = ['miami', 'roma', 'cervo'];
+    if (S.last.length === 2 && S.last[0] === S.last[1]) options = options.filter(o => o !== S.last[0]);
+    loc = pick(options);
+    S.last = [loc, ...S.last].slice(0, 2);
+  }
+
+  let clues;
+  if (loc === 'ufficio') {
+    const a = draw('ufficio', CLUES.ufficio);
+    clues = lv <= 2 ? [a, draw('ufficio', CLUES.ufficio)] : [a];
+  } else {
+    const e = () => draw(loc + ':e', CLUES[loc].easy);
+    const h = () => draw(loc + ':h', CLUES[loc].hard);
+    const x = () => draw(loc + ':x', CLUES[loc].expert);
+    if (lv === 1)      clues = [e(), e()];
+    else if (lv === 2) clues = shuffle([e(), h()]);
+    else if (lv === 3) clues = Math.random() < .5 ? [h()] : [h(), e()];
+    else if (lv === 4) clues = [h()];
+    else if (lv === 5) clues = Math.random() < .5 ? [x()] : [x(), h()];
+    else               clues = [x()];
+  }
+
+  let boss = pick(BOSS_LINES);
+  if (Math.random() < cfg.liar) boss = loc === 'ufficio' ? pick(OFFICE_LIES) : LIAR_LINE;
+
+  return { loc, clues, boss, lv, cfg, time: cfg.time };
+}
+
+function startGame(){
+  const name = $('#name').value.trim().slice(0, 16);
+  if (!name) {
+    show('menu');
+    $('#name').classList.add('need');
+    $('#nameMsg').textContent = 'Scrivi il tuo nome per entrare in classifica.';
+    $('#name').focus();
+    return;
+  }
+  $('#name').classList.remove('need');
+  $('#nameMsg').textContent = '';
+  store.set('luca:name', name);
+  const a = audio(); if (a && a.state === 'suspended') a.resume();
+  bags = {};
+  S = { name, score: 0, lives: T.lives, streak: 0, bestStreak: 0, round: 0, found: 0,
+        phase: 'ring', cur: null, t0: 0, last: [], nextOffice: rand(...T.officeFirst) };
+  renderHud();
+  show('game');
+  nextCall();
+}
+
+function nextCall(){
+  clearTimers();
+  S.round++;
+  S.cur = buildRound();
+  const newLevel = S.cur.lv > 1 && (S.round - 1) % T.callsPerLevel === 0;
+  S.phase = 'ring';
+  $('#avatar').classList.add('ringing');
+  $('#state').textContent = 'Squilla…';
+  $('#boss').textContent = newLevel ? `Livello ${S.cur.lv}. ${LEVEL_MSG[Math.min(S.cur.lv, LEVEL_MSG.length - 1)]}` : '';
+  $('#captions').innerHTML = '';
+  renderHud();
+  $('#callView').hidden = false;
+  $('#result').hidden = true;
+  $('#fill').style.transform = 'scaleX(1)';
+  $('#timer').classList.remove('hurry');
+  setButtons(false);
+  SFX.ring();
+  later(connect, rand(T.ringMin, T.ringMax));
+}
+
+function connect(){
+  S.phase = 'call';
+  const { cfg } = S.cur;
+  $('#avatar').classList.remove('ringing');
+  $('#boss').textContent = '«' + garble(S.cur.boss, cfg.noise / 2) + '»';
+  setButtons(true);
+  S.cur.clues.forEach((c, i) => later(() => {
+    const el = document.createElement('span');
+    el.className = 'cap';
+    el.textContent = '[' + garble(c, cfg.noise) + ']';
+    $('#captions').appendChild(el);
+    if (cfg.vanish) later(() => {
+      el.textContent = '[' + c.replace(/\S/g, '▒') + ']';
+      el.classList.add('lost');
+    }, cfg.vanish);
+  }, i * cfg.gap));
+  S.t0 = performance.now();
+  raf = requestAnimationFrame(tick);
+}
+
+function tick(now){
+  if (S.phase !== 'call') return;
+  const elapsed = (now - S.t0) / 1000;
+  const frac = Math.max(0, 1 - elapsed / S.cur.time);
+  $('#fill').style.transform = `scaleX(${frac})`;
+  $('#timer').classList.toggle('hurry', frac < .3);
+  $('#state').textContent = clock(elapsed);
+  if (frac <= 0) return resolve(null);
+  raf = requestAnimationFrame(tick);
+}
+
+function resolve(choice){
+  if (!S || S.phase !== 'call') return;
+  S.phase = 'feedback';
+  const frac = Math.max(0, 1 - (performance.now() - S.t0) / 1000 / S.cur.time);
+  clearTimers();
+  const loc = S.cur.loc;
+  const correct = choice === loc;
+  let big, sub, pts = '';
+
+  buttons.forEach(b => {
+    b.disabled = true;
+    if (b.dataset.loc === loc) b.classList.add('giusto');
+    if (choice && b.dataset.loc === choice && !correct) b.classList.add('sbagliato');
+  });
+
+  if (correct) {
+    S.found++;
+    const m = multiplier() * (1 + T.levelBonus * (S.cur.lv - 1));
+    if (loc === 'ufficio') {
+      const gained = Math.round((T.officeBase + T.officeSpeed * frac) * m);
+      S.score += gained;
+      const refill = S.lives < T.lives;
+      S.lives = Math.min(T.lives, S.lives + 1);
+      big = 'Bonus ufficio.';
+      sub = 'Luca era davvero in ufficio.';
+      pts = `+${fmt(gained)} punti` + (m > 1 ? ` (×${m.toLocaleString('it-IT', { maximumFractionDigits: 2 })})` : '') + (refill ? ', batteria +1' : '');
+      SFX.jackpot();
+      flash('gold');
+    } else {
+      const gained = Math.round((100 + 400 * frac) * m);
+      S.score += gained;
+      big = 'Preso.';
+      sub = `Era ${WHERE[loc]}.`;
+      pts = `+${fmt(gained)} punti` + (m > 1 ? ` (×${m.toLocaleString('it-IT', { maximumFractionDigits: 2 })})` : '');
+      SFX.ok();
+      flash('ok');
+    }
+    S.streak++;
+    S.bestStreak = Math.max(S.bestStreak, S.streak);
+  } else {
+    S.lives--;
+    S.streak = 0;
+    if (choice === null)           { big = 'Ha riattaccato.'; SFX.hangup(); }
+    else if (choice === 'ufficio') { big = 'Magari.'; SFX.ko(); }
+    else                           { big = 'No.'; SFX.ko(); }
+    sub = loc === 'ufficio' ? 'Era in ufficio. Bonus perso.' : `Era ${WHERE[loc]}.`;
+    flash('ko');
+  }
+
+  $('#state').textContent = 'Chiamata terminata';
+  $('#rBig').textContent = big;
+  $('#rSub').textContent = sub;
+  $('#rPts').textContent = pts;
+  $('#callView').hidden = true;
+  $('#result').hidden = false;
+  renderHud();
+
+  later(() => S.lives <= 0 ? gameOver() : nextCall(), T.feedbackMs);
+}
+
+async function gameOver(){
+  clearTimers();
+  S.phase = 'over';
+  const prev = parseInt(store.get('luca:best') || '0', 10);
+  const isNew = S.score > prev;
+  const best = Math.max(prev, S.score);
+  store.set('luca:best', String(best));
+  $('#oScore').textContent = fmt(S.score);
+  $('#oFound').textContent = levelOf(S.round);
+  $('#oStreak').textContent = S.bestStreak;
+  $('#oBest').textContent = fmt(best);
+  $('#oBest').classList.toggle('new', isNew && S.score > 0);
+  $('#oRank').textContent = '';
+  SFX.over();
+  show('over');
+  $('#again').focus();
+
+  await submitScore(S.name, S.score);
+  const { rows } = await fetchBoard();
+  const i = rows.findIndex(r => norm(r.name) === norm(S.name));
+  if (i >= 0) $('#oRank').textContent = `Sei ${i + 1}º su ${rows.length} in classifica.`;
+}
+
+function goMenu(){
+  const best = parseInt(store.get('luca:best') || '0', 10);
+  $('#menuRecord').textContent = best > 0 ? `Il tuo record: ${fmt(best)} punti` : '';
+  show('menu');
+}
+
+/* =========================================================
+   INPUT
+   ========================================================= */
+$('#start').addEventListener('click', startGame);
+$('#again').addEventListener('click', startGame);
+$('#boardPlay').addEventListener('click', startGame);
+$('#menuBoard').addEventListener('click', openBoard);
+$('#overBoard').addEventListener('click', openBoard);
+$('#boardBack').addEventListener('click', goMenu);
+$('#name').addEventListener('keydown', e => { if (e.key === 'Enter') startGame(); });
+$('#name').addEventListener('input', () => { $('#name').classList.remove('need'); $('#nameMsg').textContent = ''; });
+buttons.forEach(b => b.addEventListener('click', () => resolve(b.dataset.loc)));
+$('#mute').addEventListener('click', () => {
+  muted = !muted;
+  $('#mute').textContent = muted ? '🔇' : '🔊';
+  $('#mute').setAttribute('aria-pressed', String(muted));
+  $('#mute').setAttribute('aria-label', muted ? 'Attiva audio' : 'Disattiva audio');
+});
+const KEYMAP = { '1':'miami', '2':'roma', '3':'cervo', '4':'ufficio' };
+document.addEventListener('keydown', e => {
+  if (S && S.phase === 'call' && KEYMAP[e.key]) { e.preventDefault(); resolve(KEYMAP[e.key]); }
+});
+
+$('#name').value = store.get('luca:name') || '';
+goMenu();
+</script>
+</body>
+</html>
