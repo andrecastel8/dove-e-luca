@@ -76,7 +76,6 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--cc);outline-off
 .status .score{color:var(--testo);font-weight:800;font-size:18px;font-variant-numeric:tabular-nums}
 .status .mult{color:var(--cc);font-weight:800;margin-left:6px}
 .status .lvl{margin-left:10px;font-size:14px}
-.cap.lost{color:#7A6A1F}
 .status .right{display:flex;align-items:center;gap:14px;margin-left:auto}
 .mute{background:none;border:0;color:var(--testo-2);font-size:18px;padding:4px}
 .battery{display:flex;align-items:center;gap:2px}
@@ -304,141 +303,223 @@ const SUPABASE_KEY = 'sb_publishable_Sw6c6p3dj0iA4cs25xR10A_0YDzuaXO';
 const CLUES = {
   miami: {
     easy: [
-      'qualcuno ordina un cortadito al bancone',
-      '«Qui il ghiaccio lo mettono anche nell\'acqua»',
-      '«Ho chiesto un caffè e mi è arrivato un secchio»',
-      '«La mancia minima è il venti per cento»',
-      '«Ho lasciato la macchina al valet»',
-      'un DJ set in piscina alle undici di mattina',
-      '«Il prezzo sul cartellino non include le tasse»',
-      '«Al supermercato ci sono trenta tipi di burro di arachidi»',
-      '«Il pranzo qui si chiama brunch e dura tre ore»',
-      '«In spiaggia ci sono torrette dei bagnini colorate»'
+      "qualcuno ordina un cortadito al bancone",
+      "«Qui il ghiaccio lo mettono anche nell'acqua»",
+      "«Ho chiesto un caffè e mi è arrivato un secchio»",
+      "«La mancia minima è il venti per cento»",
+      "«Ho lasciato la macchina al valet»",
+      "un DJ set in piscina alle undici di mattina",
+      "«Il prezzo sul cartellino non include le tasse»",
+      "«Al supermercato ci sono trenta tipi di burro di arachidi»",
+      "«Il pranzo qui si chiama brunch e dura tre ore»",
+      "«In spiaggia ci sono torrette dei bagnini colorate»",
+      "«Qui al ristorante ti portano il conto senza che lo chiedi»",
+      "«La macchina a noleggio è automatica ed enorme»",
+      "«Colazione in hotel: uova strapazzate e bacon»",
+      "«C'è una partita di football, tutti col casco»",
+      "«Il centro commerciale ha un parcheggio grande come un paese»",
+      "«Qui le strade hanno i numeri al posto dei nomi»",
+      "«Caldo umido da tropici, e sono le nove di sera»",
+      "«Al drive-through del caffè c'è la fila di pick-up»"
     ],
     hard: [
-      'sbadiglio: «Ma da voi che ore sono?»',
-      '«Il volo di ritorno parte stasera, arrivo domattina»',
-      'pellicani che si contendono un pesce sulla banchina',
-      'radio: allerta uragano per il weekend',
-      '«Piove tutti i pomeriggi alle quattro, poi niente»',
-      '«Devo ricordarmi di dichiarare tutto alla dogana»',
-      '«Il pick-up a noleggio non entra nel parcheggio»',
-      'cartello: vietato dare da mangiare agli alligatori',
-      '«Colazione? Pancake alle undici»',
-      '«Qui un caffè costa sei, ma non euro»'
+      "sbadiglio: «Ma da voi che ore sono?»",
+      "«Il volo di ritorno parte stasera, arrivo domattina»",
+      "pellicani che si contendono un pesce sulla banchina",
+      "radio: allerta uragano per il weekend",
+      "«Piove tutti i pomeriggi alle quattro, poi niente»",
+      "«Devo ricordarmi di dichiarare tutto alla dogana»",
+      "«Il pick-up a noleggio non entra nel parcheggio»",
+      "cartello: vietato dare da mangiare agli alligatori",
+      "«Colazione? Pancake alle undici»",
+      "«Qui un caffè costa sei, ma non euro»",
+      "«La cucina chiude alle nove, che follia»",
+      "«Qui parlano tutti due lingue, nessuna è l'italiano»",
+      "«Il bancomat mi dà banconote tutte dello stesso colore»",
+      "«In camera niente tapparelle, solo tende»",
+      "«Il bidet in hotel? Non pervenuto»",
+      "«Il porto è pieno di navi da crociera gigantesche»",
+      "«In autostrada si sorpassa anche da destra»",
+      "«Trenta gradi, e siamo a gennaio»"
     ],
     expert: [
-      '«Qui il sole sorge quando da voi è ora di pranzo»',
-      '«Ho comprato il latte a galloni»',
-      '«Fuori ci sono novanta gradi»',
-      '«La spina del caricatore non entra nella presa»',
-      '«Andavo a sessantacinque miglia all\'ora»',
-      '«Il weekend lungo qui cade a fine maggio»',
-      '«Quando fa freddo le iguane cadono dagli alberi»',
-      '«Il cameriere mi riempie l\'acqua senza chiedere»',
-      '«Al bar mi hanno chiesto il documento per una birra»',
-      '«Qui gli avocado sono grandi come meloni»',
-      '«Per dolce una key lime pie»',
-      '«La sveglia segna le sette AM»',
-      '«Il tassista ha girato a destra col rosso»',
-      '«C\'è un lamantino vicino al pontile»'
+      "«Qui il sole sorge quando da voi è ora di pranzo»",
+      "«Ho comprato il latte a galloni»",
+      "«Fuori ci sono novanta gradi»",
+      "«La spina del caricatore non entra nella presa»",
+      "«Andavo a sessantacinque miglia all'ora»",
+      "«Il weekend lungo qui cade a fine maggio»",
+      "«Quando fa freddo le iguane cadono dagli alberi»",
+      "«Il cameriere mi riempie l'acqua senza chiedere»",
+      "«Al bar mi hanno chiesto il documento per una birra»",
+      "«Qui gli avocado sono grandi come meloni»",
+      "«Per dolce una key lime pie»",
+      "«La sveglia segna le sette AM»",
+      "«Il tassista ha girato a destra col rosso»",
+      "«C'è un lamantino vicino al pontile»",
+      "«Domani si vota, ma per lo sceriffo»",
+      "«Ho preso un cafecito in un bicchierino di plastica»",
+      "«Il numero dell'hotel ha il prefisso più uno»",
+      "«La targa della macchina ha un'arancia disegnata»",
+      "«Giovedì c'è il pranzo del Ringraziamento»",
+      "«Ho visto le Everglades dall'aereo»",
+      "«Qui il fuso è lo stesso di New York»",
+      "«In hotel il piano terra lo chiamano primo piano»"
     ]
   },
   roma: {
     easy: [
-      'un vigile fischia a un incrocio impazzito',
-      'motorini che sgasano su un selciato irregolare',
-      '«Una carbonara, ma senza panna eh»',
-      'un ambulante: «Ombrello? Selfie stick?»',
-      'due tifosi litigano sul derby',
-      '«Prendo una cacio e pepe e scappo»',
-      '«Il cameriere continua a chiamarmi dottore»',
-      '«Ho fatto tre chilometri in un\'ora»',
-      '«Ho preso un maritozzo con la panna»',
-      '«Qui ogni cento metri c\'è una chiesa»'
+      "un vigile fischia a un incrocio impazzito",
+      "motorini che sgasano su un selciato irregolare",
+      "«Una carbonara, ma senza panna eh»",
+      "un ambulante: «Ombrello? Selfie stick?»",
+      "due tifosi litigano sul derby",
+      "«Prendo una cacio e pepe e scappo»",
+      "«Il cameriere continua a chiamarmi dottore»",
+      "«Ho fatto tre chilometri in un'ora»",
+      "«Ho preso un maritozzo con la panna»",
+      "«Qui ogni cento metri c'è una chiesa»",
+      "«Pizza bianca con la mortadella, per merenda»",
+      "«I turisti si fanno la foto con un finto centurione»",
+      "«Hanno fermato i lavori della metro: altri scavi»",
+      "«Amatriciana col guanciale, mica pancetta»",
+      "«Il cameriere mi chiama capo»",
+      "«Ho visto quattro preti in dieci minuti»",
+      "«La metro ha tre linee, e una è sempre in ritardo»",
+      "«Il traffico è bloccato da un corteo di auto blu»"
     ],
     hard: [
-      'gabbiani enormi che svuotano un cassonetto',
-      '«C\'è sciopero dei mezzi, arrivo tardi»',
-      '«Ho parcheggiato in terza fila, faccio presto»',
-      '«Finalmente s\'è alzato il ponentino»',
-      'una fontanella che butta acqua senza fermarsi mai',
-      '«Ho preso un supplì al volo»',
-      '«Sotto il ministero c\'è una manifestazione»',
-      '«Stasera cena fuori porta, ai Castelli»',
-      'un monsignore saluta qualcuno al tavolo accanto',
-      '«Il traffico sull\'anello è completamente fermo»'
+      "gabbiani enormi che svuotano un cassonetto",
+      "«C'è sciopero dei mezzi, arrivo tardi»",
+      "«Ho parcheggiato in terza fila, faccio presto»",
+      "«Finalmente s'è alzato il ponentino»",
+      "una fontanella che butta acqua senza fermarsi mai",
+      "«Ho preso un supplì al volo»",
+      "«Sotto il ministero c'è una manifestazione»",
+      "«Stasera cena fuori porta, ai Castelli»",
+      "un monsignore saluta qualcuno al tavolo accanto",
+      "«Il traffico sull'anello è completamente fermo»",
+      "«Il cielo è pieno di storni, sembrano nuvole nere»",
+      "«Carciofi alla giudia, una meraviglia»",
+      "«Stasera una gricia e poi a letto»",
+      "«C'è una fila di pellegrini fino al fiume»",
+      "«La spazzatura qui non la ritirano da giorni»",
+      "«Domenica vado al mare a Ostia»",
+      "«Ci hanno costruito le case sopra un teatro antico»",
+      "«Due ore di fila per un soffitto dipinto»"
     ],
     expert: [
-      '«Hanno appena sparato il cannone, è mezzogiorno»',
-      '«Dal buco di una serratura si vede una cupola»',
-      '«Prendo una grattachecca e torno»',
-      '«Aspetto il 64, ma passa sempre pieno»',
-      '«Cena da quinto quarto, stasera»',
-      '«Domenica c\'è l\'Angelus, la piazza sarà piena»',
-      '«Su ogni tombino ci sono quattro lettere»',
-      '«Ho bevuto dal nasone»',
-      '«Sto passando su un ponte pieno di angeli»',
-      '«Un gatto dorme su un rudere di duemila anni»',
-      '«Stasera fuochi per Pietro e Paolo»',
-      '«Davanti a me c\'è un obelisco sopra un elefante»',
-      '«Passa il tram 8, sferragliando»',
-      '«Panino con la porchetta di Ariccia»'
+      "«Hanno appena sparato il cannone, è mezzogiorno»",
+      "«Dal buco di una serratura si vede una cupola»",
+      "«Prendo una grattachecca e torno»",
+      "«Aspetto il 64, ma passa sempre pieno»",
+      "«Cena da quinto quarto, stasera»",
+      "«Domenica c'è l'Angelus, la piazza sarà piena»",
+      "«Su ogni tombino ci sono quattro lettere»",
+      "«Ho bevuto dal nasone»",
+      "«Sto passando su un ponte pieno di angeli»",
+      "«Un gatto dorme su un rudere di duemila anni»",
+      "«Stasera fuochi per Pietro e Paolo»",
+      "«Davanti a me c'è un obelisco sopra un elefante»",
+      "«Passa il tram 8, sferragliando»",
+      "«Panino con la porchetta di Ariccia»",
+      "«Sono davanti a una fontana con quattro fiumi»",
+      "«C'è una statua piena di bigliettini satirici»",
+      "«Ho messo la mano in una bocca che morde i bugiardi»",
+      "«C'è una piramide in mezzo al traffico»",
+      "«Sono a due passi da un altro Stato, senza passaporto»",
+      "«Al mercato le puntarelle sono già tagliate»",
+      "«Questa chiesa ha un buco nel tetto e piove dentro»",
+      "«Cammino su una strada antica con le tombe ai lati»"
     ]
   },
   cervo: {
     easy: [
-      'drizze che tintinnano sugli alberi delle barche',
-      '«Il tender ci passa a prendere alle otto»',
-      'un motoscafo che rallenta e qualcuno lancia una cima',
-      '«Andiamo col gommone a fare il bagno in una caletta»',
-      '«Metti la crema, in barca il sole picchia»',
-      'un marinaio: «Ormeggiamo di poppa»',
-      '«Aperitivo in banchina alle sette»',
-      'in spiaggia un venditore urla «Cocco bello!»',
-      '«Ho preso ombrellone e due lettini in prima fila»',
-      '«Il campo boe è pieno»'
+      "drizze che tintinnano sugli alberi delle barche",
+      "«Il tender ci passa a prendere alle otto»",
+      "un motoscafo che rallenta e qualcuno lancia una cima",
+      "«Andiamo col gommone a fare il bagno in una caletta»",
+      "«Metti la crema, in barca il sole picchia»",
+      "un marinaio: «Ormeggiamo di poppa»",
+      "«Aperitivo in banchina alle sette»",
+      "in spiaggia un venditore urla «Cocco bello!»",
+      "«Ho preso ombrellone e due lettini in prima fila»",
+      "«Il campo boe è pieno»",
+      "«Granita al limone sul molo»",
+      "«Il marinaio ci ha fatto gli spaghetti ai ricci»",
+      "«Il pescatore in banchina parla sardo»",
+      "«Il sentiero per la spiaggia passa in mezzo al ginepro»",
+      "«Il vento ha girato, spostiamo la barca dall'altra parte dell'isola»",
+      "«Ferragosto in barca, come tutti»",
+      "«Ombrellone in prima fila: centocinquanta euro al giorno»",
+      "«Prendo l'aliscafo per un'isoletta qui davanti»"
     ],
     hard: [
-      '«C\'è un maestrale assurdo, ti sento male»',
-      '«Il mirto lo offre la casa»',
-      '«Stasera porceddu»',
-      '«La Piazzetta è piena di gente»',
-      '«Il traghetto da Livorno era pieno»',
-      '«Domani giro dell\'arcipelago in gommone»',
-      '«Per dolce le seadas col miele»',
-      '«Il cannonau va benissimo con questo pecorino»',
-      '«Spezza il carasau, che fa le briciole»',
-      'profumo di macchia mediterranea e granito caldo'
+      "«C'è un maestrale assurdo, ti sento male»",
+      "«Il mirto lo offre la casa»",
+      "«Stasera porceddu»",
+      "«La Piazzetta è piena di gente»",
+      "«Il traghetto da Livorno era pieno»",
+      "«Domani giro dell'arcipelago in gommone»",
+      "«Per dolce le seadas col miele»",
+      "«Il cannonau va benissimo con questo pecorino»",
+      "«Spezza il carasau, che fa le briciole»",
+      "profumo di macchia mediterranea e granito caldo",
+      "«Pardulas per colazione»",
+      "«Malloreddus alla campidanese per pranzo»",
+      "«Il nuraghe qui vicino ha tremila anni»",
+      "«Fregola con le arselle, stasera»",
+      "«A cena hanno cantato i tenores»",
+      "«Il volo di rientro parte da Olbia»",
+      "«I cartelli stradali sono in italiano e in gallurese»",
+      "«Ho preso la zuppa gallurese, pesantissima»"
     ],
     expert: [
-      '«Qui le rocce hanno la forma di animali»',
-      '«Qui le case non hanno spigoli, sembrano scolpite»',
-      '«La chiesa qui è bianca e tutta curve»',
-      '«Un vermentino di Gallura, grazie»',
-      '«Domani regatano i maxi, il porto è pieno»',
-      '«Mi offrono il casu marzu, passo»',
-      '«Stasera concerto di launeddas»',
-      '«Il vento oggi entra dalle Bocche»',
-      '«Domani vediamo la spiaggia rosa, ma solo dalla barca»',
-      '«A pranzo culurgiones»',
-      '«Qui il granito è rosa»',
-      '«Qui per dire sì dicono "eja"»',
-      '«Domani gita a Caprera, alla casa di Garibaldi»',
-      '«Bottarga di muggine sulla pasta, stasera»'
+      "«Qui le rocce hanno la forma di animali»",
+      "«Qui le case non hanno spigoli, sembrano scolpite»",
+      "«La chiesa qui è bianca e tutta curve»",
+      "«Un vermentino di Gallura, grazie»",
+      "«Domani regatano i maxi, il porto è pieno»",
+      "«Mi offrono il casu marzu, passo»",
+      "«Stasera concerto di launeddas»",
+      "«Il vento oggi entra dalle Bocche»",
+      "«Domani vediamo la spiaggia rosa, ma solo dalla barca»",
+      "«A pranzo culurgiones»",
+      "«Qui il granito è rosa»",
+      "«Qui per dire sì dicono \"eja\"»",
+      "«Domani gita a Caprera, alla casa di Garibaldi»",
+      "«Bottarga di muggine sulla pasta, stasera»",
+      "«Domani gita a Tavolara, ci aspetta il re»",
+      "«Questo porto l'ha voluto un principe»",
+      "«Bagno alla spiaggia che porta il nome di un principe»",
+      "«Il pane qui si chiama spianata»",
+      "«Ho visto le maschere di legno con i campanacci»",
+      "«Mi hanno offerto un bicchiere di filu 'e ferru»",
+      "«La bandiera qui ha quattro teste di moro»",
+      "«Domani in barca fino a Spargi»"
     ]
   },
   ufficio: [
-    'la stampante si inceppa',
-    'qualcuno: «Chi ha preso la mia tazza?»',
-    'un badge bippa al tornello',
-    '«La sala riunioni è prenotata fino alle tre»',
-    'la macchinetta del caffè del piano',
-    'un collega: «Luca? Sei proprio tu?»',
-    'tastiere che ticchettano, neon che ronzano',
-    '«In cucina c\'è la torta per un compleanno»',
-    'il condizionatore dell\'open space a diciotto gradi',
-    '«Chi ha lasciato i fogli sulla fotocopiatrice?»'
+    "la stampante si inceppa",
+    "qualcuno: «Chi ha preso la mia tazza?»",
+    "un badge bippa al tornello",
+    "«La sala riunioni è prenotata fino alle tre»",
+    "la macchinetta del caffè del piano",
+    "un collega: «Luca? Sei proprio tu?»",
+    "tastiere che ticchettano, neon che ronzano",
+    "«In cucina c'è la torta per un compleanno»",
+    "il condizionatore dell'open space a diciotto gradi",
+    "«Chi ha lasciato i fogli sulla fotocopiatrice?»",
+    "«Il proiettore non si collega, qualcuno ha un adattatore?»",
+    "un collega: «Ti mando l'invito per un allineamento veloce»",
+    "«Chi ha prenotato la stanza focus tutto il giorno?»",
+    "la porta del bagno del piano che cigola",
+    "qualcuno: «La rete ospiti non funziona»",
+    "«Ordiniamo dalla mensa?»",
+    "«Mi aggiorni il deck entro le cinque?»",
+    "un collega sussurra: «C'è Luca… in carne e ossa»",
+    "«Le piante dell'open space sono finte, vero?»",
+    "una sedia da ufficio che rotola sul pavimento"
   ]
 };
 const BOSS_LINES = [
@@ -455,11 +536,11 @@ const LIAR_LINE = 'Sono in ufficio, giuro.';                    // bugia nei tur
 const OFFICE_LIES = ['Sono in aeroporto, ti sento male.', 'Sono fuori, si sente il vento.']; // bugia nei turni ufficio
 const LEVEL_MSG = ['', '',
   'Più veloce.',
-  'La linea è disturbata.',
+  'Indizi più difficili.',
   'Un indizio solo.',
-  'Indizi da esperti. E spariscono.',
+  'Indizi da esperti.',
   'Solo esperti.',
-  'La linea peggiora.'
+  'Ancora più veloce.'
 ];
 const WHERE = { miami:'a Miami', roma:'a Roma', cervo:'a Porto Cervo', ufficio:'in ufficio' };
 
@@ -470,19 +551,18 @@ const T = {
   lives: 3,
   ringMin: 500, ringMax: 1200,                 // ms di squillo
   callsPerLevel: 5,
-  /* Livelli. time = secondi per rispondere, gap = ms tra indizi,
-     noise = quota di lettere disturbate, vanish = ms prima che l'indizio
-     sparisca (0 = resta), liar = probabilità che Luca menta */
+  /* Livelli. time = secondi per rispondere, gap = ms tra un indizio e l'altro,
+     liar = probabilità che Luca menta */
   levels: [
-    { time: 5.0, gap: 650, noise: 0,   vanish: 0,    liar: 0   }, // 1: due indizi facili
-    { time: 4.2, gap: 600, noise: 0,   vanish: 0,    liar: .15 }, // 2: facile + difficile
-    { time: 3.5, gap: 550, noise: .12, vanish: 0,    liar: .25 }, // 3: difficile, linea disturbata
-    { time: 3.0, gap: 500, noise: .2,  vanish: 0,    liar: .3  }, // 4: un indizio difficile
-    { time: 2.6, gap: 450, noise: .28, vanish: 1600, liar: .35 }, // 5: indizi da esperti, spariscono
-    { time: 2.2, gap: 400, noise: .35, vanish: 1200, liar: .4  }  // 6: solo esperti
+    { time: 4.5, gap: 600, liar: 0   }, // 1: due indizi facili
+    { time: 3.8, gap: 550, liar: .15 }, // 2: facile + difficile
+    { time: 3.2, gap: 500, liar: .25 }, // 3: difficile (a volte + facile)
+    { time: 2.7, gap: 450, liar: .3  }, // 4: un indizio difficile
+    { time: 2.3, gap: 400, liar: .35 }, // 5: esperto (a volte + difficile)
+    { time: 2.0, gap: 350, liar: .4  }  // 6: solo esperti
   ],
-  /* dal livello 7 in poi ogni livello peggiora ancora fino ai limiti */
-  beyond: { timeStep: .2, timeMin: 1.1, noiseStep: .06, noiseMax: .6, vanishStep: 100, vanishMin: 700 },
+  /* dal livello 7: -0,15 s a livello, fino a 1 secondo */
+  beyond: { timeStep: .15, timeMin: 1.0 },
   levelBonus: .25,                              // +25% punti per ogni livello
   officeFirst: [4, 6],                          // primo turno ufficio tra il 4° e il 6°
   officeEvery: [5, 8],                          // poi uno ogni 5–8 chiamate
@@ -665,19 +745,8 @@ const clock = sec => '00:' + String(Math.floor(sec)).padStart(2, '0');
 function levelOf(r){ return Math.floor((r - 1) / T.callsPerLevel) + 1; }
 function levelCfg(lv){
   if (lv <= T.levels.length) return T.levels[lv - 1];
-  const last = T.levels[T.levels.length - 1], b = T.beyond, k = lv - T.levels.length;
-  return {
-    time: Math.max(b.timeMin, last.time - b.timeStep * k),
-    gap: last.gap,
-    noise: Math.min(b.noiseMax, last.noise + b.noiseStep * k),
-    vanish: Math.max(b.vanishMin, last.vanish - b.vanishStep * k),
-    liar: last.liar
-  };
-}
-/* disturbo sulla linea: sostituisce lettere a caso */
-function garble(text, p){
-  if (!p) return text;
-  return [...text].map(ch => (ch !== ' ' && Math.random() < p) ? '▒' : ch).join('');
+  const last = T.levels[T.levels.length - 1], k = lv - T.levels.length;
+  return { ...last, time: Math.max(T.beyond.timeMin, last.time - T.beyond.timeStep * k) };
 }
 
 function buildRound(){
@@ -760,17 +829,13 @@ function connect(){
   S.phase = 'call';
   const { cfg } = S.cur;
   $('#avatar').classList.remove('ringing');
-  $('#boss').textContent = '«' + garble(S.cur.boss, cfg.noise / 2) + '»';
+  $('#boss').textContent = '«' + S.cur.boss + '»';
   setButtons(true);
   S.cur.clues.forEach((c, i) => later(() => {
     const el = document.createElement('span');
     el.className = 'cap';
-    el.textContent = '[' + garble(c, cfg.noise) + ']';
+    el.textContent = '[' + c + ']';
     $('#captions').appendChild(el);
-    if (cfg.vanish) later(() => {
-      el.textContent = '[' + c.replace(/\S/g, '▒') + ']';
-      el.classList.add('lost');
-    }, cfg.vanish);
   }, i * cfg.gap));
   S.t0 = performance.now();
   raf = requestAnimationFrame(tick);
