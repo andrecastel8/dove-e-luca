@@ -1,10 +1,14 @@
-const SUPABASE_URL = 'https://mzlqrlevxwdnepucmjly.supabase.co/rest/v1/';
-const SUPABASE_KEY = 'sb_publishable_Sw6c6p3dj0iA4cs25xR10A_0YDzuaXO';
 <!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#13233F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dov'è Luca?">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>Dov'è Luca?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,7 +35,8 @@ const SUPABASE_KEY = 'sb_publishable_Sw6c6p3dj0iA4cs25xR10A_0YDzuaXO';
   :root{ --pagina:#0B2A31; --cornice:#050D1A; color-scheme:dark; }
 }
 *{box-sizing:border-box}
-html,body{margin:0;height:100%}
+html,body{margin:0;height:100%;overscroll-behavior:none}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{
   background:var(--pagina);
   display:flex;justify-content:center;align-items:center;
@@ -40,7 +45,7 @@ body{
   -webkit-tap-highlight-color:transparent;
 }
 .phone{
-  width:100%;max-width:420px;height:100dvh;max-height:880px;
+  width:100%;max-width:420px;height:100vh;height:100dvh;max-height:880px;
   background:var(--notte);
   display:flex;flex-direction:column;position:relative;overflow:hidden;
   transition:box-shadow .25s;
@@ -52,12 +57,18 @@ body{
   .phone.flash-gold{box-shadow:inset 0 0 0 5px var(--cc),0 0 0 12px var(--cornice)}
 }
 @media (max-width:499px){
+  body{background:var(--notte)}
+  .phone{
+    max-height:none;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
   .phone.flash-ok{box-shadow:inset 0 0 0 5px var(--ok)}
   .phone.flash-ko{box-shadow:inset 0 0 0 5px var(--ko)}
   .phone.flash-gold{box-shadow:inset 0 0 0 5px var(--cc)}
 }
 [hidden]{display:none !important}
-button{font:inherit;cursor:pointer}
+button{font:inherit;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.dest,.call,.ghost{-webkit-appearance:none;appearance:none}
 button:focus-visible,input:focus-visible{outline:3px solid var(--cc);outline-offset:2px}
 
 /* Barra di stato */
@@ -170,6 +181,30 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--cc);outline-off
 .list li.first .nm,.list li.first .pt{font-size:22px}
 .list li.me .nm,.list li.me .pt{color:var(--cc)}
 .list .empty{display:block;border:0;color:var(--testo-2);font-family:'Atkinson Hyperlegible',sans-serif;font-size:16px;padding:18px 0}
+/* Touch: niente suggerimenti da tastiera */
+@media (hover:none) and (pointer:coarse){ .hint,.dest .k{display:none} }
+/* Schermi bassi: iPhone SE, mini, Safari con le barre visibili */
+@media (max-height:760px){
+  .status{padding-top:10px;min-height:42px}
+  .avatar{width:84px;height:84px}
+  .caller .who{font-size:24px;margin-top:8px}
+  .stage{min-height:140px;padding-top:4px;padding-bottom:4px}
+  .boss{font-size:17px;margin-bottom:10px}
+  .cap{font-size:17px}
+  .result .big{font-size:32px}
+  .grid{padding:12px 14px 14px;gap:8px}
+  .dest{padding:16px 12px;font-size:17px}
+  #menu h1{font-size:40px;margin:16px 0 10px}
+  .name{margin-top:14px;padding:13px 16px}
+  .call{padding:16px}
+  .ghost{padding:13px}
+  #over h2,#board h2{font-size:36px}
+  .stats dd{font-size:26px}
+}
+@media (max-height:640px){
+  .hint{display:none}
+  .avatar{width:68px;height:68px}
+}
 </style>
 </head>
 <body>
@@ -258,8 +293,8 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--cc);outline-off
    (Project Settings → API). Se restano vuoti, la classifica
    funziona solo in locale su questo dispositivo.
    ========================================================= */
-const SUPABASE_URL = '';   // es. 'https://abcdefgh.supabase.co'
-const SUPABASE_KEY = '';   // chiave "publishable" o "anon public"
+const SUPABASE_URL = 'https://mzlqrlevxwdnepucmjly.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_Sw6c6p3dj0iA4cs25xR10A_0YDzuaXO';
 
 /* =========================================================
    CONTENUTI — modificabili liberamente
@@ -479,6 +514,7 @@ document.querySelectorAll('.avatar').forEach((el, i) => {
 /* =========================================================
    CLASSIFICA
    ========================================================= */
+const API = SUPABASE_URL.trim().replace(/\/+$/, '').replace(/\/rest\/v1$/, '') + '/rest/v1';
 const online = () => Boolean(SUPABASE_URL && SUPABASE_KEY);
 function apiHeaders(){
   const h = { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' };
@@ -501,7 +537,7 @@ async function submitScore(name, score){
   const all = localScores(); all.push({ name, score }); store.set('luca:scores', JSON.stringify(all.slice(-200)));
   if (!online()) return;
   try {
-    await fetch(SUPABASE_URL + '/rest/v1/scores', {
+    await fetch(API + '/scores', {
       method: 'POST',
       headers: { ...apiHeaders(), Prefer: 'return=minimal' },
       body: JSON.stringify({ name, score })
@@ -511,13 +547,18 @@ async function submitScore(name, score){
 async function fetchBoard(){
   if (!online()) return { rows: localBoard(), mode: 'local' };
   try {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard?select=name,best,games&order=best.desc&limit=${T.boardSize}`, { headers: apiHeaders() });
-    if (!r.ok) throw new Error(r.status);
+    const r = await fetch(`${API}/leaderboard?select=name,best,games&order=best.desc&limit=${T.boardSize}`, { headers: apiHeaders() });
+    if (!r.ok) return { rows: localBoard(), mode: 'error', detail: ERRORS[r.status] || `errore ${r.status}` };
     return { rows: await r.json(), mode: 'online' };
   } catch(e){
-    return { rows: localBoard(), mode: 'error' };
+    return { rows: localBoard(), mode: 'error', detail: 'controlla SUPABASE_URL o la connessione' };
   }
 }
+const ERRORS = {
+  401: 'chiave non valida, ricopiala con il pulsante di copia',
+  403: 'permessi mancanti, riesegui supabase.sql',
+  404: 'tabella non trovata, esegui supabase.sql'
+};
 const NOTES = {
   online: 'Il miglior punteggio di ciascuno, tutto l\'ufficio.',
   local: 'Classifica salvata solo su questo dispositivo.',
@@ -528,8 +569,8 @@ async function openBoard(){
   const list = $('#list');
   list.innerHTML = '';
   $('#boardNote').textContent = 'Carico la classifica…';
-  const { rows, mode } = await fetchBoard();
-  $('#boardNote').textContent = NOTES[mode];
+  const { rows, mode, detail } = await fetchBoard();
+  $('#boardNote').textContent = NOTES[mode] + (detail ? ` (${detail})` : '');
   if (!rows.length) {
     const li = document.createElement('li');
     li.className = 'empty';
